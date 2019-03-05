@@ -1,0 +1,38 @@
+//if Array X = {1, 5, 3, 4, 2, 6} in one time switch = {1, 2, 3, 4, 5, 6} then the result = true; sequentially from small to large
+//if Array X = {1, 5, 7, 4, 2, 6} in one time switch = {1, 2, 7, 4, 5, 6} then the result = Tidak memenuhi syarat; not sequential from small to large
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OrderAndSwitch
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int[] A = new int[] {2, 19, 8, 1, 13, 5, 33 };
+
+            bool i = solution(A);
+            if (i == false) Console.WriteLine("Result : Tidak Memenuhi Syarat");
+            else Console.WriteLine("Result : {0}", i);
+            Console.ReadLine();
+        }
+        public static bool solution(int[] A)
+        {
+            int r = 0;
+            bool result = true;
+            int[] AMin = A.OrderBy(n => n).ToArray();
+            for (int i = 0; i < A.Length; i++)
+            {
+                if (AMin[i] == A[i]) r += 0;
+                else r += 1;
+            }
+            if (r <= 2) result = true;
+            else result = false;
+            return result;
+        }
+    }
+}
