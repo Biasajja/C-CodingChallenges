@@ -1,20 +1,41 @@
 //Example : My Name Is Michael Burn
 //Result : yM emaN sI leahciM nruB
 
-public string solution(string S) {
-        char[] arr = S.ToCharArray();
-        Array.Reverse(arr);
-        string Zig = "";
-        string result = "";
-        for (int i = 0; i<arr.Length; i++)
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ReverseString
+{
+    class Program
+    {
+        static void Main(string[] args)
         {
-            Zig += Convert.ToString(arr[i]);
+            Console.Write("Masukkan sebuah string : ");
+            string s = Console.ReadLine();
+            solution(s);
+            Console.ReadLine(); 
         }
-        string[] s = Zig.Split(' ');
-        for (int j = s.Length-1; j>=0; j--)
+        public static string solution(string S)
         {
-            if (j==0) result += s[0];
-            else result += s[j]+" ";
+            char[] arr = S.ToCharArray();
+            Array.Reverse(arr);
+            string Zig = "";
+            string result = "";
+            for (int i = 0; i < arr.Length; i++)
+            {
+                Zig += Convert.ToString(arr[i]);
+            }
+            string[] s = Zig.Split(' ');
+            for (int j = s.Length - 1; j >= 0; j--)
+            {
+                if (j == 0) result += s[0];
+                else result += s[j] + " ";
+            }
+            Console.WriteLine(result);
+            return result;
         }
-        return result;
-        }
+    }
+}
