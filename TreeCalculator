@@ -1,0 +1,486 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace Calculators
+{
+      ubahOrder baru = new ubahOrder(TextBox1.Text);
+      hitung ini = new hitung(baru.getItu(), baru.getY());
+      TextBox1.Text = ini.getHasil().ToString();
+      
+      public class hitung
+    {
+        private double hasil;//penyimpanan hasil akhir
+        private double[] nilai = new double[100];//variabel penyimpanan sementara
+        private int b;//indeks variabel nilai[]
+
+
+        /// <summary>
+        /// Melakukan proses perhitungan
+        /// </summary>
+        /// <param name="nilai"></param>
+        /// <param name="batas"></param>
+        public hitung(string[] nilai, int batas)
+        {
+            hasil = 0;
+            int s;
+            string kar;
+            double kiri, kanan;
+
+            b = 0;
+            for (s = 0; s < batas; s++)
+            {
+                kar = nilai[s];
+                if (kar == "^")
+                {
+                    kanan = popHitung();
+                    kiri = popHitung();
+                    hasil = (Math.Pow(kiri, kanan));
+                    pushHitung(hasil);
+                }
+                else if (kar == "*")
+                {
+                    kanan = popHitung();
+                    kiri = popHitung();
+                    hasil = (kiri * kanan);
+                    pushHitung(hasil);
+                }
+                else if (kar == "/")
+                {
+                    kanan = popHitung();
+                    kiri = popHitung();
+                    hasil = (kiri / kanan);
+                    pushHitung(hasil);
+                }
+                else if (kar == "+")
+                {
+                    kanan = popHitung();
+                    kiri = popHitung();
+                    hasil = (kiri + kanan);
+                    pushHitung(hasil);
+                }
+                else if (kar == "-")
+                {
+                    kanan = popHitung();
+                    kiri = popHitung();
+                    hasil = (kiri - kanan);
+                    pushHitung(hasil);
+                }
+                else
+                {
+                    pushHitung(double.Parse(kar));
+                    hasil = double.Parse(kar);
+                }
+            }
+        }
+
+        /// <summary>
+        ///Memasukkan nilai ke dalam nilai[], hanya untuk penyimpanan sementara
+        /// </summary>
+        /// <param name="isi"></param>
+        private void pushHitung(double isi)
+        {
+            b += 1;
+            nilai[b] = isi;
+        }
+
+        /// <summary>
+        /// Mengambil nilai dari nilai[] pada array terakhir
+        /// </summary>
+        /// <returns></returns>
+        private double popHitung()
+        {
+            double bentar;
+            bentar = nilai[b];
+            b--;
+            return bentar;
+        }
+
+        /// <summary>
+        /// Mengembalikan hasil akhir dari penghitungan
+        /// </summary>
+        /// <returns></returns>
+        public double getHasil()
+        {
+            return this.hasil;
+        }
+    }
+    
+    class ubahOrder
+    {
+        private int x, y;//indeks array
+        private string[] stack = new string[100];//tempat menyimpan sementara
+        private string[] itu = new string[100];//variabel penyimpanan akhir
+        private string sementara = "";//penyimpanan string berbentuk digit sementara
+        //Proses perubahan
+
+        /// <summary>
+        /// Mengubah order
+        /// </summary>
+        /// <param name="isi"></param>
+        public ubahOrder(string isi)
+        {
+            string awal;
+            x = 0; y = 0;
+
+            //Membaca tiap karakter sesuai panjangnya
+            for (int i = 0; i < isi.Length; i++)
+            {
+                awal = isi.Substring(i, 1);
+                if (awal == "(")
+                {
+                    if (sementara != "")
+                        simpan();
+                    push(awal);
+                }
+                else if (awal == ")")
+                {
+                    //Memasukkan angka ke dalam nilai
+                    if (sementara != "")
+                        simpan();
+                    while (stack[x] != "(")
+                    {
+                        itu[y] = pop();
+                        y += 1;
+                    }
+                    pop();
+                }
+                else
+                {
+                    if (operato(awal) == 1)
+                    {
+                        while (duluan(awal) <= duluan(stack[x]) && x != 0)
+                        {
+                            if (sementara != "")
+                                simpan();
+                            itu[y] = pop();
+                            y += 1;
+                        }
+                        push(awal);
+                        //Memasukkan angka ke dalam nilai
+                        if (sementara != "")
+                            simpan();
+                    }
+                    else
+                    {
+                        sementara += awal;
+                    }
+                }
+            }
+            //Memasukkan angka ke dalam nilai
+            if (sementara != "")
+                simpan();
+            //Mengeluarkan nilai yang masih ada di dalam stack
+            if (x != 0)
+            {
+                while (x > 0 && stack[x] != "(")
+                {
+                    itu[y] = pop();
+                    y += 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Mengubah order dengan nilai acuan x=isi1
+        /// </summary>
+        /// <param name="isi"></param>
+        /// <param name="isi1"></param>
+        public ubahOrder(string isi, double isi1)
+        {
+            string awal;
+            x = 0; y = 0;
+
+            //Membaca tiap karakter sesuai panjangnya
+            for (int i = 0; i < isi.Length; i++)
+            {
+                awal = isi.Substring(i, 1);
+                if (awal == "(")
+                {
+                    if (sementara != "")
+                        simpan();
+                    push(awal);
+                }
+                else if (awal == ")")
+                {
+                    //Memasukkan angka ke dalam nilai
+                    if (sementara != "")
+                        simpan();
+                    while (stack[x] != "(")
+                    {
+                        itu[y] = pop();
+                        y += 1;
+                    }
+                    pop();
+                }
+                else
+                {
+                    if (operato(awal) == 1)
+                    {
+                        while (duluan(awal) <= duluan(stack[x]) && x != 0)
+                        {
+                            if (sementara != "")
+                                simpan();
+                            itu[y] = pop();
+                            y += 1;
+                        }
+                        push(awal);
+                        //Memasukkan angka ke dalam nilai
+                        if (sementara != "")
+                            simpan();
+                    }
+                    else
+                    {
+                        if (awal == "x" || awal == "X")
+                            sementara += isi1.ToString();
+                        else
+                            sementara += awal;
+                    }
+                }
+            }
+            //Memasukkan angka ke dalam nilai
+            if (sementara != "")
+                simpan();
+            //Mengeluarkan nilai yang masih ada di dalam stack
+            if (x != 0)
+            {
+                while (x > 0 && stack[x] != "(")
+                {
+                    itu[y] = pop();
+                    y += 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Mengubah order dengan parameter x=isi1 dan y=isi2
+        /// </summary>
+        /// <param name="isi"></param>
+        /// <param name="isi1"></param>
+        /// <param name="isi2"></param>
+        public ubahOrder(string isi, double isi1, double isi2)
+        {
+            string awal;
+            x = 0; y = 0;
+
+            //Membaca tiap karakter sesuai panjangnya
+            for (int i = 0; i < isi.Length; i++)
+            {
+                awal = isi.Substring(i, 1);
+                if (awal == "(")
+                {
+                    if (sementara != "")
+                        simpan();
+                    push(awal);
+                }
+                else if (awal == ")")
+                {
+                    //Memasukkan angka ke dalam nilai
+                    if (sementara != "")
+                        simpan();
+                    while (stack[x] != "(")
+                    {
+                        itu[y] = pop();
+                        y += 1;
+                    }
+                    pop();
+                }
+                else
+                {
+                    if (operato(awal) == 1)
+                    {
+                        while (duluan(awal) <= duluan(stack[x]) && x != 0)
+                        {
+                            if (sementara != "")
+                                simpan();
+                            itu[y] = pop();
+                            y += 1;
+                        }
+                        push(awal);
+                        //Memasukkan angka ke dalam nilai
+                        if (sementara != "")
+                            simpan();
+                    }
+                    else
+                    {
+                        if (awal == "x" || awal == "X")
+                            sementara += isi1.ToString();
+                        else if (awal == "y" || awal == "Y")
+                            sementara += isi2.ToString();
+                        else
+                            sementara += awal;
+                    }
+                }
+            }
+            //Memasukkan angka ke dalam nilai
+            if (sementara != "")
+                simpan();
+            //Mengeluarkan nilai yang masih ada di dalam stack
+            if (x != 0)
+            {
+                while (x > 0 && stack[x] != "(")
+                {
+                    itu[y] = pop();
+                    y += 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Mengubah order dengan parameter x=isi1, y=isi2, z=isi3
+        /// </summary>
+        /// <param name="isi"></param>
+        /// <param name="isi1"></param>
+        /// <param name="isi2"></param>
+        /// <param name="isi3"></param>
+        public ubahOrder(string isi, double isi1, double isi2, double isi3)
+        {
+            string awal;
+            x = 0; y = 0;
+
+            //Membaca tiap karakter sesuai panjangnya
+            for (int i = 0; i < isi.Length; i++)
+            {
+                awal = isi.Substring(i, 1);
+                if (awal == "(")
+                {
+                    if (sementara != "")
+                        simpan();
+                    push(awal);
+                }
+                else if (awal == ")")
+                {
+                    //Memasukkan angka ke dalam nilai
+                    if (sementara != "")
+                        simpan();
+                    while (stack[x] != "(")
+                    {
+                        itu[y] = pop();
+                        y += 1;
+                    }
+                    pop();
+                }
+                else
+                {
+                    if (operato(awal) == 1)
+                    {
+                        while (duluan(awal) <= duluan(stack[x]) && x != 0)
+                        {
+                            if (sementara != "")
+                                simpan();
+                            itu[y] = pop();
+                            y += 1;
+                        }
+                        push(awal);
+                        //Memasukkan angka ke dalam nilai
+                        if (sementara != "")
+                            simpan();
+                    }
+                    else
+                    {
+                        if (awal == "x" || awal == "X")
+                            sementara += isi1.ToString();
+                        else if (awal == "y" || awal == "Y")
+                            sementara += isi2.ToString();
+                        else if (awal == "z" || awal == "Z")
+                            sementara += isi3.ToString();
+                        else
+                            sementara += awal;
+                    }
+                }
+            }
+            //Memasukkan angka ke dalam nilai
+            if (sementara != "")
+                simpan();
+            //Mengeluarkan nilai yang masih ada di dalam stack
+            if (x != 0)
+            {
+                while (x > 0 && stack[x] != "(")
+                {
+                    itu[y] = pop();
+                    y += 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Memasukkan nilai berupa angka
+        /// </summary>
+        private void simpan()
+        {
+            itu[y] = sementara;
+            y += 1;
+            sementara = "";
+        }
+
+        /// <summary>
+        /// Mengecek apakah operator atau bukan
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        private int operato(string i)
+        {
+            if (i == "*" || i == "/" || i == "+" || i == "-")
+                return 1;
+            else
+                return 0;
+        }
+
+        /// <summary>
+        /// Mengurutkan tingkatan operator
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        private int duluan(string n)
+        {
+            int antri;
+            if (n == "*" || n == "/") antri = 2;
+            else if (n == "+" || n == "-") antri = 1;
+            else antri = 0;
+            return antri;
+        }
+
+        /// <summary>
+        /// Memasukkan nilai dalam antrian
+        /// </summary>
+        /// <param name="pus"></param>
+        private void push(string pus)
+        {
+            x++;
+            stack[x] = pus;
+        }
+
+        /// <summary>
+        /// Mengambil nilai dari antrian
+        /// </summary>
+        /// <returns></returns>
+        private string pop()
+        {
+            string po;
+            po = stack[x];
+            x--;
+            return po;
+        }
+
+        /// <summary>
+        /// Mengembalikan nilai itu[]
+        /// </summary>
+        /// <returns></returns>
+        public string[] getItu()
+        {
+            return this.itu;
+        }
+
+        /// <summary>
+        /// mengembalikan indeks dari itu[]
+        /// </summary>
+        /// <returns></returns>
+        public int getY()
+        {
+            return this.y;
+        }
+    }
+}
